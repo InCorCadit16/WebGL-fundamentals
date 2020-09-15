@@ -44,19 +44,35 @@ function start() {
         gl.useProgram(program);
 
         const positionsData = new Float32Array([
-            -0.5 , -0.4 , -0.75,
-             0.5 , -0.4 , -0.75,
-             0   ,  0.4 , -0.75 ,
+            -0.75 , -0.65 , -1,
+             0.75 , -0.65 , -1,
+             0 ,  0.65 , -1 ,
         ]);
+
+
+        const colorData = new Float32Array([
+             1, 0, 0, 1 ,
+             1, 1, 0, 1 ,
+             0, 0, 1, 1 
+        ])
         
+        // Position
         const buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, positionsData, gl.STATIC_DRAW);
-
         const attribute = gl.getAttribLocation(program, 'position');
-        gl.enableVertexAttribArray(attribute);
         gl.vertexAttribPointer(attribute, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(attribute);
 
+        // Color
+        const cBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, colorData, gl.STATIC_DRAW);
+        const cAttribute = gl.getAttribLocation(program, 'vColor');
+        gl.vertexAttribPointer(cAttribute, 4, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(cAttribute);
+
+        // Draw
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
         
@@ -66,11 +82,12 @@ function start() {
 function loadVShader() {
     const sourceV = `
         attribute vec3 position;
+        attribute vec4 vColor;
         varying vec4 color;
       
         void main() {
           gl_Position = vec4(position, 1);
-          color = gl_Position * 0.5 + 0.5;
+          color = vColor;
         }
     `;
 
@@ -93,7 +110,7 @@ function loadFShader() {
         varying vec4 color;
     
         void main() {
-        gl_FragColor = color;
+            gl_FragColor = color;
         }
     `;
 
