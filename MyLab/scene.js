@@ -41,9 +41,9 @@ function main() {
         return;
     }
 
-    figures.push(createCube());
+    figures.push(createConus());
 
-    figures[0].enableRotation(0, 1, 0);
+    figures[0].enableRotation(1, 0, 0);
 
     setInterval(() => { render(gl) }, 30);
 
@@ -56,8 +56,8 @@ function render(gl) {
     // View
     var viewMatrix = new Matrix4();
     viewMatrix
-        .setPerspective(70, 1, 1, 100)
-        .lookAt(0, 2, 6, 0, 0, 0, 0, 1, 0);
+        .setPerspective(50, 1, 1, 100)
+        .lookAt(0, 3, 5, 0, 0, 0, 0, 1, 0);
 
     var u_Mvp = gl.getUniformLocation(gl.program, 'u_Mvp');
     gl.uniformMatrix4fv(u_Mvp, false, viewMatrix.elements);
@@ -70,7 +70,7 @@ function render(gl) {
 
         // Rotate
         var rotateMatrix = new Matrix4();
-        rotateMatrix.setRotate(figure.rotate ? figure.angle++ : 0, figure.rotateX, figure.rotateY, figure.rotateZ);
+        rotateMatrix.setRotate(figure.rotate ? figure.angle += 4 : 0, figure.rotateX, figure.rotateY, figure.rotateZ);
 
         var u_Rotate = gl.getUniformLocation(gl.program, 'u_Rotate');
         gl.uniformMatrix4fv(u_Rotate, false, rotateMatrix.elements);
