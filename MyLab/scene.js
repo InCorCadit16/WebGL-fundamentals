@@ -41,12 +41,7 @@ function main() {
         return;
     }
 
-    figures.push(createConus());
-
-    figures[0].enableRotation(1, 0, 0);
-
     setInterval(() => { render(gl) }, 30);
-
 }
 
 function render(gl) {
@@ -57,7 +52,7 @@ function render(gl) {
     var viewMatrix = new Matrix4();
     viewMatrix
         .setPerspective(50, 1, 1, 100)
-        .lookAt(0, 3, 5, 0, 0, 0, 0, 1, 0);
+        .lookAt(0, 3, 6.5, 0, 0, 0, 0, 1, 0);
 
     var u_Mvp = gl.getUniformLocation(gl.program, 'u_Mvp');
     gl.uniformMatrix4fv(u_Mvp, false, viewMatrix.elements);
@@ -70,7 +65,7 @@ function render(gl) {
 
         // Rotate
         var rotateMatrix = new Matrix4();
-        rotateMatrix.setRotate(figure.rotate ? figure.angle += 4 : 0, figure.rotateX, figure.rotateY, figure.rotateZ);
+        rotateMatrix.setRotate(figure.rotate ? figure.angle += 3 : figure.angle, figure.rotateX, figure.rotateY, figure.rotateZ);
 
         var u_Rotate = gl.getUniformLocation(gl.program, 'u_Rotate');
         gl.uniformMatrix4fv(u_Rotate, false, rotateMatrix.elements);
@@ -105,4 +100,61 @@ function initVertexBuffers(gl, figure) {
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
     return indices.length;
+}
+
+function addFigure(figureName) {
+    if (figures.length === 3) {
+        alert('You can\'t add more than 3 objects');
+        return;
+    }
+
+    switch (figureName) {
+        case 'cube': figures.push(createCube()); break;
+        case 'pyramid': figures.push(createPyramid()); break;
+        case 'cylinder': figures.push(createCylinder()); break;
+        case 'conus': figures.push(createConus()); break;
+    }
+
+    let moveBy = 0;
+    if (figures.length === 1) 
+        moveBy = -2
+
+    if (figures.length === 3)
+        moveBy = 2
+
+    if (moveBy === 0) return;
+
+    let lastFigure = figures[figures.length - 1]
+    for (let i = 0; i < lastFigure.verticesColors.length; i += 6) {
+        lastFigure.verticesColors[i] += moveBy;
+    }
+}
+
+function removeFigure() {
+    figures.pop();
+}
+
+function rotate(axis) {
+    var index = document.getElementById('objectIndex').value;
+    if (index >= figures.length) {
+        alert('Object on this position is not created yet')
+        return;
+    }
+
+    switch (axis) {
+        case 'x': figures[index].enableRotation(1, 0, 0); break;
+        case 'y': figures[index].enableRotation(0, 1, 0); break;
+        case 'z': figures[index].enableRotation(0, 0, 1); break;
+    }
+    
+}
+
+function stopRotation() {
+    var index = document.getElementById('objectIndex').value;
+    if (index >= figures.length) {
+        alert('Object on this position is not created yet')
+        return;
+    }
+
+    figures[index].disableRotation();
 }

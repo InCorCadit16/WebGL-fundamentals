@@ -19,6 +19,7 @@ class Figure {
 
     disableRotation() {
         this.rotate = false;
+        this.angle = 0;
     }
 }
 
@@ -45,7 +46,7 @@ function createCube() {
     );
 }
 
-function createPyramide() {
+function createPyramid() {
     return new Figure(
         new Float32Array([
             0.0, 0.5, 0.0, 1, 1, 1,  // v0 White
