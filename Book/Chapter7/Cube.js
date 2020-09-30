@@ -5,13 +5,13 @@ var VSHADER_SOURCE =
   attribute vec4 a_Position;
   attribute vec4 a_Color;
 
-  uniform mat4 u_View;
+  uniform mat4 u_Mvp;
   uniform mat4 u_Rotate;
 
   varying vec4 v_Color;
 
   void main() {
-    gl_Position = u_View * u_Rotate * a_Position;
+    gl_Position = u_Mvp * u_Rotate * a_Position;
     v_Color = a_Color;
   }`;
 
@@ -47,46 +47,36 @@ var ANGLE = 1;
 
 function initVertexBuffers(gl) {
   var verticesColors = new Float32Array([
-    -0.6, 0.6, -0.6,   0.5, 0.5, 0.5,
-		-0.6, 0.6, 0.6,    0.5, 0.5, 0.5,
-		0.6, 0.6, 0.6,     0.5, 0.5, 0.5,
-		0.6, 0.6, -0.6,    0.5, 0.5, 0.5,
-
-		// Left
-		-0.6, 0.6, 0.6,    0.75, 0.25, 0.5,
-		-0.6, -0.6, 0.6,   0.75, 0.25, 0.5,
-		-0.6, -0.6, -0.6,  0.75, 0.25, 0.5,
-		-0.6, 0.6, -0.6,   0.75, 0.25, 0.5,
-
-		// Right
-		0.6, 0.6, 0.6,    0.25, 0.25, 0.75,
-		0.6, -0.6, 0.6,   0.25, 0.25, 0.75,
-		0.6, -0.6, -0.6,  0.25, 0.25, 0.75,
-		0.6, 0.6, -0.6,   0.25, 0.25, 0.75,
-
-		// Front
-		0.6, 0.6, 0.6,    0.6, 0.0, 0.15,
-		0.6, -0.6, 0.6,    0.6, 0.0, 0.15,
-		-0.6, -0.6, 0.6,    0.6, 0.0, 0.15,
-		-0.6, 0.6, 0.6,    0.6, 0.0, 0.15,
-
-		// Back
-		0.6, 0.6, -0.6,    0.0, 0.6, 0.15,
-		0.6, -0.6, -0.6,    0.0, 0.6, 0.15,
-		-0.6, -0.6, -0.6,    0.0, 0.6, 0.15,
-		-0.6, 0.6, -0.6,    0.0, 0.6, 0.15,
-
-		// Bottom
-		-0.6, -0.6, -0.6,   0.5, 0.5, 0.6,
-		-0.6, -0.6, 0.6,    0.5, 0.5, 0.6,
-		0.6, -0.6, 0.6,     0.5, 0.5, 0.6,
-		0.6, -0.6, -0.6,    0.5, 0.5, 0.6,
+    // Vertex coordinates and color
+    0.5,  0.5,  0.5,     0.5,  0.5,  0.5,  // v0 White
+    -0.5,  0.5,  0.5,     0.5,  0.0,  0.5,  // v1 Magenta
+    -0.5, -0.5,  0.5,     0.5,  0.0,  0.0,  // v2 Red
+     0.5, -0.5,  0.5,     0.5,  0.5,  0.0,  // v3 Yellow
+     0.5, -0.5, -0.5,     0.0,  0.5,  0.0,  // v4 Green
+     0.5,  0.5, -0.5,     0.0,  0.5,  0.5,  // v5 Cyan
+    -0.5,  0.5, -0.5,     0.0,  0.0,  0.5,  // v6 Blue
+    -0.5, -0.5, -0.5,     0.0,  0.0,  0.0   // v7 Black
   ]);
-  var n = 36;
 
-  var vertexColorbuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorbuffer);
+  indices = new Uint8Array([
+    0, 1, 2,   0, 2, 3,    // front
+    0, 3, 4,   0, 4, 5,    // right
+    0, 5, 6,   0, 6, 1,    // up
+    1, 6, 7,   1, 7, 2,    // left
+    7, 4, 3,   7, 3, 2,    // down
+    4, 7, 6,   4, 6, 5     // back
+  ]);
+
+
+
+  var vertexColorBuffer = gl.createBuffer();
+  var indicesBuffer = gl.createBuffer();
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, verticesColors, gl.STATIC_DRAW);
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
   var FSIZE = verticesColors.BYTES_PER_ELEMENT;
   var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
@@ -99,7 +89,7 @@ function initVertexBuffers(gl) {
 
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-  return n;
+  return indices.length;
 }
 
 
@@ -109,16 +99,19 @@ function render(gl) {
   gl.clearColor(0, 0, 0, 1);
   gl.enable(gl.DEPTH_TEST);
 
-  var u_View = gl.getUniformLocation(gl.program, 'u_View');
+  var u_Mvp = gl.getUniformLocation(gl.program, 'u_Mvp');
 
   var viewMatrix = new Matrix4();
-  viewMatrix.setPerspective(30, 1, 1, 100);
-  viewMatrix.setLookAt(0.1, 0, 0, 0, 0, 0, 0, 1, 0);
+  viewMatrix
+    .setPerspective(20, 1, 1, 100)
+    .lookAt(5, 1, 3, 0, 0, 0, 0, 1, 0);
+            
+            
 
-  gl.uniformMatrix4fv(u_View, false, viewMatrix.elements);
+  gl.uniformMatrix4fv(u_Mvp, false, viewMatrix.elements);
 
   var rotateMatrix = new Matrix4();
-  rotateMatrix.setRotate(ANGLE++, 0, 1, 0);
+  rotateMatrix.setRotate(ANGLE++, 0, 0, 1);
 
   var u_Rotate = gl.getUniformLocation(gl.program, 'u_Rotate');
 
@@ -126,5 +119,5 @@ function render(gl) {
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  gl.drawArrays(gl.TRIANGLES, 0, n);
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
