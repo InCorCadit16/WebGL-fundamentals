@@ -5,12 +5,13 @@ var VSHADER_SOURCE =
     attribute vec4 a_Color;
 
     uniform mat4 u_Mvp;
+    uniform mat4 u_Transform;
     uniform mat4 u_Rotate;
 
     varying vec4 v_Color;
 
     void main() {
-        gl_Position = u_Mvp * u_Rotate * a_Position;
+        gl_Position = u_Mvp * u_Transform * u_Rotate * a_Position;
         v_Color = a_Color;
     }`;
 
@@ -51,7 +52,7 @@ function render(gl) {
     // View
     var viewMatrix = new Matrix4();
     viewMatrix
-        .setPerspective(50, 1, 1, 100)
+        .setPerspective(45, 1, 1, 100)
         .lookAt(0, 3, 6.5, 0, 0, 0, 0, 1, 0);
 
     var u_Mvp = gl.getUniformLocation(gl.program, 'u_Mvp');
@@ -63,11 +64,18 @@ function render(gl) {
     for (let figure of figures) {
         var n = initVertexBuffers(gl, figure);
 
-        // Rotate
+        var transformMatrix = new Matrix4();
+        transformMatrix 
+            .setTranslate(figure.moveX, figure.moveY, figure.moveZ)
+            .scale(figure.scale, figure.scale, figure.scale);
+
+        var u_Transform = gl.getUniformLocation(gl.program, 'u_Transform');
+        gl.uniformMatrix4fv(u_Transform, false, transformMatrix.elements);
+
         var rotateMatrix = new Matrix4();
         rotateMatrix.setRotate(figure.rotate ? figure.angle += 3 : figure.angle, figure.rotateX, figure.rotateY, figure.rotateZ);
 
-        var u_Rotate = gl.getUniformLocation(gl.program, 'u_Rotate');
+        var u_Rotate= gl.getUniformLocation(gl.program, 'u_Rotate');
         gl.uniformMatrix4fv(u_Rotate, false, rotateMatrix.elements);
 
         gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
@@ -142,9 +150,9 @@ function rotate(axis) {
     }
 
     switch (axis) {
-        case 'x': figures[index].enableRotation(1, 0, 0); break;
-        case 'y': figures[index].enableRotation(0, 1, 0); break;
-        case 'z': figures[index].enableRotation(0, 0, 1); break;
+        case 'x': figures[index].enableRotation(0, 1, 0); break;
+        case 'y': figures[index].enableRotation(0, 0, 1); break;
+        case 'z': figures[index].enableRotation(1, 0, 0); break;
     }
     
 }
@@ -157,4 +165,48 @@ function stopRotation() {
     }
 
     figures[index].disableRotation();
+}
+
+
+function moveX() {
+    var index = document.getElementById('objectIndex').value;
+    if (index >= figures.length) {
+        alert('Object on this position is not created yet')
+        return;
+    }
+
+    var moveX = document.getElementById('moveX').value;
+    figures[index].moveX = moveX;
+}
+
+function moveY() {
+    var index = document.getElementById('objectIndex').value;
+    if (index >= figures.length) {
+        alert('Object on this position is not created yet')
+        return;
+    }
+
+    var moveY = document.getElementById('moveY').value;
+    figures[index].moveY = moveY;
+}
+
+function moveZ() {
+    var index = document.getElementById('objectIndex').value;
+    if (index >= figures.length) {
+        alert('Object on this position is not created yet')
+        return;
+    }
+
+    var moveZ = document.getElementById('moveZ').value;
+    figures[index].moveZ = moveZ;
+}
+
+function scale() {
+    var index = document.getElementById('objectIndex').value;
+    if (index >= figures.length) {
+        alert('Object on this position is not created yet')
+        return;
+    }
+
+    figures[index].scale = document.getElementById('size').value;
 }

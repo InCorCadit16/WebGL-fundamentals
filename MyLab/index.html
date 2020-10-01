@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>Laboratory</title>
+    <link rel="stylesheet" href="style.css">
   </head>
 
   <body onload="main()">
@@ -10,26 +11,27 @@
     Please use a browser that supports "canvas"
     </canvas>
 
-    <h2>Adding/Removing Objects</h2>
+    <div class="functions">
+      <h2>Adding/Removing Objects</h2>
 
-    <div>
-      <button onclick="addFigure('cube')">Add Cube</button>
-      <button onclick="addFigure('pyramid')">Add Pyramid</button>
-      <button onclick="addFigure('cylinder')">Add Cylinder</button>
-      <button onclick="addFigure('conus')">Add Conus</button>
-      <button onclick="removeFigure()">Remove Last</button>
-    </div>
+      <div>
+        <button onclick="addFigure('cube')">Add Cube</button>
+        <button onclick="addFigure('pyramid')">Add Pyramid</button>
+        <button onclick="addFigure('cylinder')">Add Cylinder</button>
+        <button onclick="addFigure('conus')">Add Conus</button>
+        <button onclick="removeFigure()">Remove Last</button>
+      </div>
 
-    <h2>Transforming Objects</h2>
+      <h2>Transforming Objects</h2>
 
-    <div>
-      <select name="Object number" id="objectIndex">
-        <option value="0">1</option>
-        <option value="1">2</option>
-        <option value="2">3</option>
-      </select>
-
-
+      <p>Choose which figure to transform:
+        <select name="Object number" id="objectIndex">
+          <option value="0">1</option>
+          <option value="1">2</option>
+          <option value="2">3</option>
+        </select>
+      </p>
+      
       <div>
         <button onclick="rotate('x')">Rotate X</button>
         <button onclick="rotate('y')">Rotate Y</button>
@@ -38,17 +40,33 @@
       </div>
 
       <div>
-        <button>Move on X</button>
-        <button>Move on Y</button>
-        <button>Move on Z</button>
+        <div>
+          <p>Move X</p>
+          <span>-3</span>
+          <input type="range" id='moveX' min='-3' max='3' step='0.2' oninput="moveX()">
+          <span>3</span>
+        </div>
+
+        <div>
+          <p>Move Y</p>
+          <span>-3</span>
+          <input type="range" id='moveY' min='-3' max='3' step='0.2' oninput="moveY()">
+          <span>3</span>
+        </div>
+
+        <div>
+          <p>Move Z</p>
+          <span>-3</span>
+          <input type="range" id='moveZ' min='-3' max='3' step='0.2' oninput="moveZ()">
+          <span>3</span>
+        </div>
       </div>
 
       <div>
         <p>Size</p>
         <span>0.1</span>
-        <input type="range" id='size' name="size" min='0.1' max='2' step='0.1'>
+        <input type="range" id='size' min='0.1' max='2' step='0.1' oninput="scale()">
         <span>2.0</span>
-
       </div>
       
     </div>

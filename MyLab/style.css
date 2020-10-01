@@ -1,0 +1,19 @@
+
+button {
+    margin: 5px 10px;
+    width: 120px;
+    height: 30px;
+    border-radius: 5px;
+    color: black;
+    background: white;
+    border: 2px solid black;
+}
+
+body {
+    display: flex;
+    flex-direction: row;
+}
+
+.functions {
+    margin-left: 10px;
+}

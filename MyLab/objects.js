@@ -3,11 +3,18 @@ class Figure {
     constructor(verticesColors, indices) {
         this.verticesColors = verticesColors;
         this.indices = indices;
+
         this.angle = 0;
         this.rotateX = 1;
         this.rotateY = 0;
         this.rotateZ = 0;
         this.rotate = false;
+
+        this.scale = 1.0;
+
+        this.moveX = 0;
+        this.moveY = 0;
+        this.moveZ = 0;
     }
 
     enableRotation(rotateX, rotateY, rotateZ) {
