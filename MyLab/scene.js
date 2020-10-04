@@ -27,6 +27,15 @@ var FSHADER_SOURCE =
 
 
 figures = []
+cameraValues = {
+    perspectiveFov: 45,
+    perspectiveAspect: 1,
+    perspectiveNear: 1,
+    perspectiveFar: 15,
+    cameraX: 0,
+    cameraY: 3,
+    cameraZ: 6.5
+}
 
 function main() {
     var canvas = document.getElementById('webgl');
@@ -42,6 +51,10 @@ function main() {
         return;
     }
 
+    addFigure('conus')
+    addFigure('cylinder')
+    addFigure('cube')
+
     setInterval(() => { render(gl) }, 30);
 }
 
@@ -52,8 +65,8 @@ function render(gl) {
     // View
     var viewMatrix = new Matrix4();
     viewMatrix
-        .setPerspective(45, 1, 1, 100)
-        .lookAt(0, 3, 6.5, 0, 0, 0, 0, 1, 0);
+        .setPerspective(cameraValues.perspectiveFov, cameraValues.perspectiveAspect, cameraValues.perspectiveNear, cameraValues.perspectiveFar)
+        .lookAt(cameraValues.cameraX, cameraValues.cameraY, cameraValues.cameraZ, 0, 0, 0, 0, 1, 0);
 
     var u_Mvp = gl.getUniformLocation(gl.program, 'u_Mvp');
     gl.uniformMatrix4fv(u_Mvp, false, viewMatrix.elements);
@@ -209,4 +222,10 @@ function scale() {
     }
 
     figures[index].scale = document.getElementById('size').value;
+}
+
+
+function updateCamera(property) {
+    var newValue = parseFloat(document.getElementById(property).value)
+    cameraValues[property] = newValue;
 }

@@ -9,11 +9,15 @@ button {
     border: 2px solid black;
 }
 
-body {
+body, .moves {
     display: flex;
     flex-direction: row;
 }
 
 .functions {
     margin-left: 10px;
+}
+
+.moves > div {
+    margin-right: 30px;
 }

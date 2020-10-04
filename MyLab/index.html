@@ -39,7 +39,7 @@
         <button onclick="stopRotation()">Stop Rotation</button>
       </div>
 
-      <div>
+      <div class="moves">
         <div>
           <p>Move X</p>
           <span>-3</span>
@@ -60,13 +60,68 @@
           <input type="range" id='moveZ' min='-3' max='3' step='0.2' oninput="moveZ()">
           <span>3</span>
         </div>
+
+        <div>
+          <p>Size</p>
+          <span>0.1</span>
+          <input type="range" id='size' min='0.1' max='2' step='0.1' oninput="scale()">
+          <span>2.0</span>
+        </div>
       </div>
 
-      <div>
-        <p>Size</p>
-        <span>0.1</span>
-        <input type="range" id='size' min='0.1' max='2' step='0.1' oninput="scale()">
-        <span>2.0</span>
+      <h2>Camera</h2>
+      <div class="moves">
+        <div>
+          <p>Camera X</p>
+          <span>-10</span>
+          <input type="range" id='cameraX' min='-10' max='10' step='1' value="0" oninput="updateCamera('cameraX')">
+          <span>10</span>
+        </div>
+
+        <div>
+          <p>Camera Y</p>
+          <span>-10</span>
+          <input type="range" id='cameraY' min='-10' max='10' step='1' value="3" oninput="updateCamera('cameraY')">
+          <span>10</span>
+        </div>
+
+        <div>
+          <p>Camera Z</p>
+          <span>-10</span>
+          <input type="range" id='cameraZ' min='-10' max='10' step='1' value="6.5" oninput="updateCamera('cameraZ')">
+          <span>10</span>
+        </div>
+      </div>
+
+      <div class="moves">
+        <div>
+          <p>Fov Perspective</p>
+          <span>5</span>
+          <input type="range" id='perspectiveFov' min='5' max='100' value="45" step='1' oninput="updateCamera('perspectiveFov')">
+          <span>100</span>
+        </div>
+
+        <div>
+          <p>Aspect (width/height) Perspective</p>
+          <span>0</span>
+          <input type="range" id='perspectiveAspect' min='0' max='2' value="1" step='0.05' oninput="updateCamera('perspectiveAspect')">
+          <span>2</span>
+        </div>
+
+
+        <div>
+          <p>Near Perspective</p>
+          <span>0.5</span>
+          <input type="range" id='perspectiveNear' min='0.5' max='20' value="1" step='0.5' oninput="updateCamera('perspectiveNear')">
+          <span>20</span>
+        </div>
+
+        <div>
+          <p>Far Perspective</p>
+          <span>5</span>
+          <input type="range" id='perspectiveFar' min='5' max='20' value="15" step='1' oninput="updateCamera('perspectiveFar')">
+          <span>20</span>
+        </div>
       </div>
       
     </div>
