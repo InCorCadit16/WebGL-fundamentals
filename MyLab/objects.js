@@ -9,6 +9,7 @@ class Figure {
         this.rotateY = 0;
         this.rotateZ = 0;
         this.rotate = false;
+        this.defaultTranslate = new Matrix4().setTranslate(0, 0, 0).elements;
 
         this.scale = 1.0;
 
@@ -33,14 +34,14 @@ class Figure {
 function createCube() {
     return new Figure(
         new Float32Array([
-            0.5, 0.5, 0.5, 0.5, 0.5, 0.5,  // v0 White
-            -0.5, 0.5, 0.5, 0.5, 0.0, 0.5,  // v1 Magenta
-            -0.5, -0.5, 0.5, 0.5, 0.0, 0.0,  // v2 Red
-            0.5, -0.5, 0.5, 0.5, 0.5, 0.0,  // v3 Yellow
-            0.5, -0.5, -0.5, 0.0, 0.5, 0.0,  // v4 Green
-            0.5, 0.5, -0.5, 0.0, 0.5, 0.5,  // v5 Cyan
-            -0.5, 0.5, -0.5, 0.0, 0.0, 0.5,  // v6 Blue
-            -0.5, -0.5, -0.5, 0.0, 0.0, 0.0   // v7 Black
+            0.5, 0.5, 0.5, 1, 0, 0,  // v0 White
+            -0.5, 0.5, 0.5, 1, 0, 0,  // v1 Magenta
+            -0.5, -0.5, 0.5, 1, 0, 0,  // v2 Red
+            0.5, -0.5, 0.5,  1, 0, 0,  // v3 Yellow
+            0.5, -0.5, -0.5,  1, 1.0, 1, // v4 Green
+            0.5, 0.5, -0.5, 1, 1.0, 1,  // v5 Cyan
+            -0.5, 0.5, -0.5,  1, 1.0, 1,  // v6 Blue
+            -0.5, -0.5, -0.5,  1, 1.0, 1,  // v7 Black
         ]),
         new Uint8Array([
             0, 1, 2, 0, 2, 3,    // front
@@ -114,13 +115,13 @@ function createCylinder() {
 function createConus() {
     var verticesColors = [];
     var indices = []
-    const sectors = 2 * Math.PI / 100;
+    const sectors = 2 * Math.PI / 4;
     var angle;
 
 
     verticesColors.push(0, 0.5, 0, 1, 0, 1);
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 4; i++) {
         angle = i * sectors;
             
         verticesColors.push(Math.cos(angle) / 2);
@@ -129,13 +130,13 @@ function createConus() {
         verticesColors.push(1, 1, 0);
         
 
-        if (i <= 98)
+        if (i <= 2)
             indices.push(0, i, i + 1);
-            indices.push(100, i, i + 1);
+            indices.push(4, i, i + 1);
     }
 
     verticesColors.push(0, -0.5, 0, 1, 1, 0);
-    indices.push(0, 99, 1)
+    indices.push(0, 3, 1)
 
     return new Figure(
         new Float32Array(verticesColors),

@@ -7,11 +7,12 @@ var VSHADER_SOURCE =
     uniform mat4 u_Mvp;
     uniform mat4 u_Transform;
     uniform mat4 u_Rotate;
+    uniform mat4 u_DefaultTranslate;
 
     varying vec4 v_Color;
 
     void main() {
-        gl_Position = u_Mvp * u_Transform * u_Rotate * a_Position;
+        gl_Position = u_Mvp * u_DefaultTranslate * u_Transform * u_Rotate * a_Position;
         v_Color = a_Color;
     }`;
 
@@ -51,10 +52,6 @@ function main() {
         return;
     }
 
-    addFigure('conus')
-    addFigure('cylinder')
-    addFigure('cube')
-
     setInterval(() => { render(gl) }, 30);
 }
 
@@ -90,6 +87,10 @@ function render(gl) {
 
         var u_Rotate= gl.getUniformLocation(gl.program, 'u_Rotate');
         gl.uniformMatrix4fv(u_Rotate, false, rotateMatrix.elements);
+
+
+        var u_DefaultTranslate = gl.getUniformLocation(gl.program, 'u_DefaultTranslate');
+        gl.uniformMatrix4fv(u_DefaultTranslate, false, figure.defaultTranslate);
 
         gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
     }
@@ -138,17 +139,17 @@ function addFigure(figureName) {
 
     let moveBy = 0;
     if (figures.length === 1) 
-        moveBy = -2
+        figures[figures.length - 1].defaultTranslate = new Matrix4().setTranslate(-2, 0, 0).elements;
 
     if (figures.length === 3)
-        moveBy = 2
+        figures[figures.length - 1].defaultTranslate = new Matrix4().setTranslate(2, 0, 0).elements;
 
-    if (moveBy === 0) return;
+    // if (moveBy === 0) return;
 
-    let lastFigure = figures[figures.length - 1]
-    for (let i = 0; i < lastFigure.verticesColors.length; i += 6) {
-        lastFigure.verticesColors[i] += moveBy;
-    }
+    // let lastFigure = figures[figures.length - 1]
+    // for (let i = 0; i < lastFigure.verticesColors.length; i += 6) {
+    //     lastFigure.verticesColors[i] += moveBy;
+    // }
 }
 
 function removeFigure() {
