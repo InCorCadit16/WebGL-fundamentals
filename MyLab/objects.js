@@ -132,7 +132,7 @@ function createConus() {
 
         if (i <= 98)
             indices.push(0, i, i + 1);
-            indices.push(4, i, i + 1);
+            indices.push(100, i, i + 1);
     }
 
     verticesColors.push(0, -0.5, 0, 1, 1, 0);
