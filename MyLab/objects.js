@@ -115,13 +115,13 @@ function createCylinder() {
 function createConus() {
     var verticesColors = [];
     var indices = []
-    const sectors = 2 * Math.PI / 4;
+    const sectors = 2 * Math.PI / 100;
     var angle;
 
 
     verticesColors.push(0, 0.5, 0, 1, 0, 1);
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 100; i++) {
         angle = i * sectors;
             
         verticesColors.push(Math.cos(angle) / 2);
@@ -130,13 +130,13 @@ function createConus() {
         verticesColors.push(1, 1, 0);
         
 
-        if (i <= 2)
+        if (i <= 98)
             indices.push(0, i, i + 1);
             indices.push(4, i, i + 1);
     }
 
     verticesColors.push(0, -0.5, 0, 1, 1, 0);
-    indices.push(0, 3, 1)
+    indices.push(98, 99, 0, 99, 1, 0)
 
     return new Figure(
         new Float32Array(verticesColors),
