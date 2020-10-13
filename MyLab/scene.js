@@ -137,19 +137,11 @@ function addFigure(figureName) {
         case 'conus': figures.push(createConus()); break;
     }
 
-    let moveBy = 0;
     if (figures.length === 1) 
         figures[figures.length - 1].defaultTranslate = new Matrix4().setTranslate(-2, 0, 0).elements;
 
     if (figures.length === 3)
         figures[figures.length - 1].defaultTranslate = new Matrix4().setTranslate(2, 0, 0).elements;
-
-    // if (moveBy === 0) return;
-
-    // let lastFigure = figures[figures.length - 1]
-    // for (let i = 0; i < lastFigure.verticesColors.length; i += 6) {
-    //     lastFigure.verticesColors[i] += moveBy;
-    // }
 }
 
 function removeFigure() {
