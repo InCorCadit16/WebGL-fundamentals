@@ -9,22 +9,31 @@ var VSHADER_SOURCE =
     uniform mat4 u_Rotate;
     uniform mat4 u_DefaultTranslate;
 
+    // attribute vec4 a_Normal;
+    // attribute vec3 u_LightColor;
+    // attribute vec3 u_LightDirection;
+
     varying vec4 v_Color;
 
     void main() {
         gl_Position = u_Mvp * u_DefaultTranslate * u_Transform * u_Rotate * a_Position;
+
+        // vec3 normal = normalize(vec3(a_Normal));
+        // float nDotL = max(dot(u_LightDirection, normal), 0.0);
+        // vec3 diffuse = u_LightColor * vec3(a_Color) * nDotL;
+        // v_Color = vec4(diffuse, a_Color.a);
         v_Color = a_Color;
     }`;
 
 // Fragment shader program
 var FSHADER_SOURCE =
     `
-  precision mediump float;
-  varying vec4 v_Color;
+    precision mediump float;
+    varying vec4 v_Color;
 
-  void main() {
-    gl_FragColor = v_Color;
-  }`;
+    void main() {
+        gl_FragColor = v_Color;
+    }`;
 
 
 figures = []
@@ -55,6 +64,8 @@ function main() {
     setInterval(() => { render(gl) }, 30);
 }
 
+var dir = [0.5, 2.0, 2.0]
+
 function render(gl) {
     gl.clearColor(0, 0, 0, 1);
     gl.enable(gl.DEPTH_TEST);
@@ -67,6 +78,15 @@ function render(gl) {
 
     var u_Mvp = gl.getUniformLocation(gl.program, 'u_Mvp');
     gl.uniformMatrix4fv(u_Mvp, false, viewMatrix.elements);
+
+    // var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
+    // gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
+    
+
+    // var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
+    // var lightDirection = new Vector3(dir)
+    // lightDirection.normalize();
+    // gl.uniform3fv(u_LightDirection, lightDirection.elements);
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -98,30 +118,24 @@ function render(gl) {
 }
 
 function initVertexBuffers(gl, figure) {
-    var verticesColors = figure.verticesColors
-    var indices = figure.indices;
+    // var normals = new Float32Array([
+    //     0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
+    //     1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,  // v0-v3-v4-v5 right
+    //     0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,  // v0-v5-v6-v1 up
+    //    -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  // v1-v6-v7-v2 left
+    //     0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,  // v7-v4-v3-v2 down
+    //     0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // v4-v7-v6-v5 back
+    // ]);
 
-    var vertexColorBuffer = gl.createBuffer();
+    //if(!initArrayBuffer(gl,'a_Normal', normals, 3, gl.FLOAT)) return -1;
+    if(!initArrayBuffer(gl,'a_Position', figure.vertices, 3, gl.FLOAT)) return -1;
+    if(!initArrayBuffer(gl,'a_Color', figure.colors, 3, gl.FLOAT)) return -1;
+
     var indicesBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, verticesColors, gl.STATIC_DRAW);
-
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, figure.indices, gl.STATIC_DRAW);
 
-    var FSIZE = verticesColors.BYTES_PER_ELEMENT;
-    var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 6, 0);
-    gl.enableVertexAttribArray(a_Position);
-
-    var a_Color = gl.getAttribLocation(gl.program, 'a_Color');
-    gl.vertexAttribPointer(a_Color, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
-    gl.enableVertexAttribArray(a_Color);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-    return indices.length;
+    return figure.indices.length;
 }
 
 function addFigure(figureName) {
@@ -135,6 +149,7 @@ function addFigure(figureName) {
         case 'pyramid': figures.push(createPyramid()); break;
         case 'cylinder': figures.push(createCylinder()); break;
         case 'conus': figures.push(createConus()); break;
+        case 'spehere': figures.push(createSphere()); break;
     }
 
     if (figures.length === 1) 
@@ -217,8 +232,33 @@ function scale() {
     figures[index].scale = document.getElementById('size').value;
 }
 
-
 function updateCamera(property) {
     var newValue = parseFloat(document.getElementById(property).value)
     cameraValues[property] = newValue;
 }
+
+
+function initArrayBuffer (gl, attribute, data, num, type) {
+    // Create a buffer object
+    var buffer = gl.createBuffer();
+    if (!buffer) {
+      console.log('Failed to create the buffer object');
+      return false;
+    }
+    // Write date into the buffer object
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+    // Assign the buffer object to the attribute variable
+    var a_attribute = gl.getAttribLocation(gl.program, attribute);
+    if (a_attribute < 0) {
+      console.log('Failed to get the storage location of ' + attribute);
+      return false;
+    }
+    gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
+    // Enable the assignment of the buffer object to the attribute variable
+    gl.enableVertexAttribArray(a_attribute);
+  
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+  
+    return true;
+  }
