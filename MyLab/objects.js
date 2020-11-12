@@ -10,7 +10,7 @@ class Figure {
         this.rotateY = 0;
         this.rotateZ = 0;
         this.rotate = false;
-        this.defaultTranslate = new Matrix4().setTranslate(0, 0, 0).elements;
+        this.defaultTranslate = [0, 0, 0];
 
         this.scale = 1.0;
 
@@ -35,32 +35,28 @@ class Figure {
 function createCube() {
     return new Figure(
         new Float32Array([
-            0.5, 0.5, 0.5,   // v0 
-            -0.5, 0.5, 0.5,  // v1 
-            -0.5, -0.5, 0.5, // v2
-            0.5, -0.5, 0.5,    // v3
-            0.5, -0.5, -0.5,   // v4
-            0.5, 0.5, -0.5,   // v5
-            -0.5, 0.5, -0.5,    // v6
-            -0.5, -0.5, -0.5,    // v7
+            0.5, 0.5, 0.5,  -0.5, 0.5, 0.5,  -0.5,-0.5, 0.5,   0.5,-0.5, 0.5, // v0-v1-v2-v3 front
+            0.5, 0.5, 0.5,   0.5,-0.5, 0.5,   0.5,-0.5,-0.5,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
+            0.5, 0.5, 0.5,   0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, 0.5, 0.5, // v0-v5-v6-v1 up
+           -0.5, 0.5, 0.5,  -0.5, 0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
+           -0.5,-0.5,-0.5,   0.5,-0.5,-0.5,   0.5,-0.5, 0.5,  -0.5,-0.5, 0.5, // v7-v4-v3-v2 down
+            0.5,-0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5, 0.5,-0.5,   0.5, 0.5,-0.5 
         ]),
         new Uint8Array([
-            0, 1, 2, 0, 2, 3,    // front
-            0, 3, 4, 0, 4, 5,    // right
-            0, 5, 6, 0, 6, 1,    // up
-            1, 6, 7, 1, 7, 2,    // left
-            7, 4, 3, 7, 3, 2,    // down
-            4, 7, 6, 4, 6, 5     // back
+            0, 1, 2,   0, 2, 3,    // front
+            4, 5, 6,   4, 6, 7,    // right
+            8, 9,10,   8,10,11,    // up
+            12,13,14,  12,14,15,    // left
+            16,17,18,  16,18,19,    // down
+            20,21,22,  20,22,23     // back
         ]),
         new Float32Array([
-            1, 0, 0,
-            1, 0, 0,
-            1, 0, 0, 
-            1, 0, 0,
-            1, 1.0, 1,
-            1, 1.0, 1,
-            1, 1.0, 1,
-            1, 1.0, 1,
+            1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v1-v2-v3 front
+            1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v3-v4-v5 right
+            1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v5-v6-v1 up
+            1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v1-v6-v7-v2 left
+            1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v7-v4-v3-v2 down
+            1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0　 
         ])
     );
 }
@@ -172,8 +168,10 @@ function createConus() {
 }
 
 function createSphere() {
-    var positions = []
-    var indices = []
+    var SPHERE_DIV = 15;
+    var positions = [];
+    var indices = [];
+    var colors = [];
 
       // Generate coordinates
     for (j = 0; j <= SPHERE_DIV; j++) {
@@ -185,10 +183,13 @@ function createSphere() {
             si = Math.sin(ai);
             ci = Math.cos(ai);
 
-            positions.push(si * sj);  // X
-            positions.push(cj);       // Y
-            positions.push(ci * sj);  // Z
-            // positions.push(1.0, 1.0, 1.0);
+            positions.push((si * sj)/1.5);  // X
+            positions.push(cj/1.5);       // Y
+            positions.push((ci * sj)/1.5);  // Z
+
+            if (i % 2 === 0) colors.push(0, 0, 1);
+            else colors.push(1, 0, 0)
+            
         }
     }
 
@@ -210,6 +211,7 @@ function createSphere() {
 
     return new Figure(
         new Float32Array(positions),
-        new Uint8Array(indices)
+        new Uint8Array(indices),
+        new Float32Array(colors)
     )
 }
