@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+		<title>Two texture switching example ()___()</title>
+
+		<!-- vertex shader code block -->
+		<script id="vertex-shader" type="x-shader/x-vertex">
+			attribute vec4 vPosition;
+			attribute vec2 vTextureCoord; // texture coords were passed here from JS
+
+			varying vec2 fTextureCoord; // texture coords that will be passed to fragment shader
+
+			void
+			main() {
+			    gl_Position = vPosition;
+
+			    fTextureCoord = vTextureCoord; // passing the texture coords right to the fragment shader
+			}
+		</script>
+
+		<!-- fragment shader code block -->
+		<script id="fragment-shader" type="x-shader/x-fragment">
+			precision mediump float;
+
+			uniform sampler2D textureData; // current texture number, passed from JS
+			varying vec2 fTextureCoord;
+			
+			void
+			main() {
+				vec4 colorFromTexture = texture2D(textureData, fTextureCoord); // getting the color for the pixel based on texture coordinates
+			    gl_FragColor = colorFromTexture; // setting the color from the texture to the pixel
+
+
+			    // and example of color mixing, to combine the texture color with the values with the light colors
+				//vec4 someOtherColorForExampleSomeLightComponentFromLab3ThatYouWantToMixWithTextureColor = vec4(1.0, 0.0, 1.0, 1.0);
+			    //gl_FragColor = colorFromTexture * 0.8 + someOtherColorForExampleSomeLightComponentFromLab3ThatYouWantToMixWithTextureColor * 0.2;
+			}
+		</script>
+
+		<!-- including all scripts needed -->
+		<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+		<script type="text/javascript" src="../Common/initShaders.js"></script>
+		<script type="text/javascript" src="../Common/MV.js"></script>
+		<script type="text/javascript" src="two-textures-switching-example.js"></script>
+	</head>
+
+	<body>
+		<!-- canvas element with size attributes!! -->
+		<canvas id="gl-canvas" width="512" height="512">
+		Oops ... your browser doesn't support the HTML5 canvas element
+		</canvas>
+		<div style="display:inline-block; vertical-align: top;">
+			<label style="font-size: 24px;">Load texture 1 ---></label>
+			<input texture-number="0" type="file" class="file-loader" style="font-size: 24px;" />
+			<br><br>
+			<label style="font-size: 24px;">Load texture 2 ---></label>
+			<input texture-number="1" type="file" class="file-loader" style="font-size: 24px;" />		
+		</div>
+	</body>
+</html>

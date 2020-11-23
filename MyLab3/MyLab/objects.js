@@ -1,12 +1,9 @@
 
 class Figure {
-    constructor(vertices, indices, colors, normals) {
+    constructor(vertices, indices, colors) {
         this.vertices = vertices;
         this.colors = colors
         this.indices = indices;
-        if (normals == null) this.normals = vertices;
-        else this.normals = normals;
-        
 
         this.angle = 0;
         this.rotateX = 1;
@@ -31,21 +28,6 @@ class Figure {
 
     disableRotation() {
         this.rotate = false;
-        this.angle = 0;
-    }
-}
-
-class FigureWithTexture {
-    constructor(vertices, indices, normals, textures) {
-        this.vertices = vertices;
-        this.normals = normals;
-        this.indices = indices;
-        this.textures = textures;
-
-        let col = [];
-        vertices.forEach(v => col.push(1, 1, 1));
-        this.colors = new Uint8Array(col);
-        
         this.angle = 0;
     }
 }

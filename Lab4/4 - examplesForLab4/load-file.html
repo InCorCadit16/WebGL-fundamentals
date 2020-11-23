@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html;charset=utf-8" >
+		<title>File r-r-reader example &#176;,..,&#176;</title>
+	</head>
+	<body>
+		<input type="file" id="file-input" style="display:block; font-size: 40px; " />
+		<textarea id="loaded-text" placeholder="The contents of the file will be loaded here!" style="width: 500px; height: 300px; margin-top: 10px;"></textarea>			
+	</body>
+</html>
+
+<script type="text/javascript">
+	// putting a listener to the button html element, the listener catch the event of 'change'
+	// which happens when you pick a file
+	document.querySelector("#file-input").addEventListener('change', function() {
+		var selectedFiles = this.files;
+		if(selectedFiles.length == 0) {
+			alert('Error : No file selected');
+			return;
+		}
+		var firstFile = selectedFiles[0]; // picking the first file from the selected ones
+		readTextFromFile(firstFile);
+	});
+
+	function readTextFromFile(file) {
+		var reader = new FileReader(); // creating the object that will help us read the file
+		// setting a listener that will catch the 'load' event of reader functions		
+		reader.addEventListener('load', function(e) {
+			// when the contents are loaded --- execute all of these actions
+			var text = e.target.result;
+			console.log(text);
+			document.querySelector("#loaded-text").value = text;
+		});
+		// listener for errors that may occur
+		reader.addEventListener('error', function() {
+			alert('File error happened!');
+		});
+		// the readAsText function will get the plain text from the file
+		reader.readAsText(file); // when the function will complete execution, the 'load' event will fire
+	}
+</script>
